@@ -1,71 +1,55 @@
 package com.taobao.idlefish.flutterboostexample;
 
-import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.content.Intent;
-import android.text.TextUtils;
 
-import com.taobao.idlefish.flutterboost.Debuger;
-import com.taobao.idlefish.flutterboost.FlutterBoostPlugin;
-import com.taobao.idlefish.flutterboost.interfaces.IPlatform;
+import android.util.Log;
+import com.idlefish.flutterboost.*;
 
 import java.util.Map;
 
-import io.flutter.app.FlutterApplication;
+import com.idlefish.flutterboost.interfaces.INativeRouter;
+import io.flutter.embedding.android.FlutterView;
+import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugins.GeneratedPluginRegistrant;
 
-public class MyApplication extends FlutterApplication {
+public class MyApplication extends Application {
+
+
     @Override
     public void onCreate() {
         super.onCreate();
 
-        FlutterBoostPlugin.init(new IPlatform() {
+        INativeRouter router =new INativeRouter() {
             @Override
-            public Application getApplication() {
-                return MyApplication.this;
+            public void openContainer(Context context, String url, Map<String, Object> urlParams, int requestCode, Map<String, Object> exts) {
+               String  assembleUrl=Utils.assembleUrl(url,urlParams);
+                PageRouter.openPageByUrl(context,assembleUrl, urlParams);
             }
 
-            /**
-             * 获取应用入口的Activity,这个Activity在应用交互期间应该是一直在栈底的
-             * @return
-             */
-            @Override
-            public Activity getMainActivity() {
-                if (MainActivity.sRef != null) {
-                    return MainActivity.sRef.get();
-                }
+        };
 
-                return null;
-            }
+        FlutterBoost.BoostPluginsRegister pluginsRegister= new FlutterBoost.BoostPluginsRegister(){
 
             @Override
-            public boolean isDebug() {
-                return true;
+            public void registerPlugins(PluginRegistry mRegistry) {
+                GeneratedPluginRegistrant.registerWith(mRegistry);
+                TextPlatformViewPlugin.register(mRegistry.registrarFor("TextPlatformViewPlugin"));
             }
+        };
 
-            /**
-             * 如果flutter想打开一个本地页面，将会回调这个方法，页面参数将会拼接在url中
-             *
-             * 例如：sample://nativePage?aaa=bbb
-             *
-             * 参数就是类似 aaa=bbb 这样的键值对
-             *
-             * @param context
-             * @param url
-             * @param requestCode
-             * @return
-             */
-            @Override
-            public boolean startActivity(Context context, String url, int requestCode) {
-                Debuger.log("startActivity url="+url);
+        Platform platform= new FlutterBoost
+                .ConfigBuilder(this,router)
+                .isDebug(true)
+                .whenEngineStart(FlutterBoost.ConfigBuilder.ANY_ACTIVITY_CREATED)
+                .renderMode(FlutterView.RenderMode.texture)
+                .pluginsRegister(pluginsRegister)
+                .build();
 
-                return PageRouter.openPageByUrl(context,url,requestCode);
-            }
+        FlutterBoost.instance().init(platform);
 
-            @Override
-            public Map getSettings() {
-                return null;
-            }
-        });
+
+
     }
 }

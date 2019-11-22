@@ -8,7 +8,7 @@
 
 #import "AppDelegate.h"
 #import "UIViewControllerDemo.h"
-#import "DemoRouter.h"
+#import "PlatformRouterImp.h"
 #import <flutter_boost/FlutterBoost.h>
 
 @interface AppDelegate ()
@@ -19,6 +19,12 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+    PlatformRouterImp *router = [PlatformRouterImp new];
+    [FlutterBoostPlugin.sharedInstance startFlutterWithPlatform:router
+                                                        onStart:^(FlutterEngine *engine) {
+                                                            
+                                                        }];
+    
     self.window = [[UIWindow alloc] initWithFrame: [UIScreen mainScreen].bounds];
     
     
@@ -37,7 +43,7 @@
     UITabBarController *tabVC = [[UITabBarController alloc] init];
     UINavigationController *rvc = [[UINavigationController alloc] initWithRootViewController:tabVC];
     
-    DemoRouter *router = [DemoRouter sharedRouter];
+   
     router.navigationController = rvc;
     
     tabVC.viewControllers = @[vc,fvc];
@@ -45,10 +51,7 @@
     self.window.rootViewController = rvc;
     
     
-    [FlutterBoostPlugin.sharedInstance startFlutterWithPlatform:router
-                                                        onStart:^(FlutterViewController *fvc) {
-                                                            
-                                                        }];
+  
     
     
     

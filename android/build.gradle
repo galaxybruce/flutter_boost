@@ -1,4 +1,4 @@
-group 'com.taobao.idlefish.flutterboost'
+group 'com.idlefish.flutterboost'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -26,6 +26,7 @@ android {
     buildToolsVersion "28.0.3"
     defaultConfig {
         minSdkVersion 16
+        targetSdkVersion 28
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
@@ -34,10 +35,11 @@ android {
 }
 
 dependencies {
-    implementation 'com.alibaba:fastjson:1.2.41'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-    provided rootProject.findProject(":xservice_kit")
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.lifecycle:lifecycle-common-java8:2.1.0'
+    implementation 'com.google.android.material:material:1.2.0-alpha02'
+    implementation 'com.alibaba:fastjson:1.2.41'
 }
 
 ext {
